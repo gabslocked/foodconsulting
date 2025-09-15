@@ -7,6 +7,9 @@ import '../../data/models/accommodation_model.dart';
 import '../../data/models/hotel_model.dart';
 import '../../data/models/itinerary_model.dart';
 import '../../data/models/activity_model.dart';
+import '../../data/models/attraction_model.dart';
+import '../../data/models/tour_model.dart';
+import '../../data/models/technical_visit_model.dart';
 import '../../data/models/tip_model.dart';
 import '../../data/models/destination_model.dart';
 import '../../data/models/transport_model.dart';
@@ -25,6 +28,9 @@ class MissionProvider extends ChangeNotifier {
   List<AccommodationModel> _accommodations = [];
   List<HotelModel> _hotels = [];
   List<ActivityModel> _activities = [];
+  List<AttractionModel> _attractions = [];
+  List<TourModel> _tours = [];
+  List<TechnicalVisitModel> _technicalVisits = [];
   List<TipModel> _tips = [];
   List<DestinationModel> _destinations = [];
   List<TransportModel> _transports = [];
@@ -46,6 +52,9 @@ class MissionProvider extends ChangeNotifier {
   List<HotelModel> get hotels => _hotels;
   List<ItineraryModel> get itineraries => _itineraries;
   List<ActivityModel> get activities => _activities;
+  List<AttractionModel> get attractions => _attractions;
+  List<TourModel> get tours => _tours;
+  List<TechnicalVisitModel> get technicalVisits => _technicalVisits;
   List<TipModel> get tips => _tips;
   List<DestinationModel> get destinations => _destinations;
   List<TransportModel> get transports => _transports;
@@ -106,10 +115,25 @@ class MissionProvider extends ChangeNotifier {
       final hotels = await _loadHotels(missionId);
       debugPrint('Hotels loaded: ${hotels.length}');
       
+      debugPrint('Loading attractions...');
+      final attractions = await _loadAttractions(missionId);
+      debugPrint('Attractions loaded: ${attractions.length}');
+      
+      debugPrint('Loading tours...');
+      final tours = await _loadTours(missionId);
+      debugPrint('Tours loaded: ${tours.length}');
+      
+      debugPrint('Loading technical visits...');
+      final technicalVisits = await _loadTechnicalVisits(missionId);
+      debugPrint('Technical visits loaded: ${technicalVisits.length}');
+      
       // Assign loaded data to provider variables
       _flights = flights;
       _accommodations = accommodations;
       _activities = activities;
+      _attractions = attractions;
+      _tours = tours;
+      _technicalVisits = technicalVisits;
       _tips = tips;
       _hotels = hotels;
       
@@ -129,7 +153,7 @@ class MissionProvider extends ChangeNotifier {
       _sponsors = await _loadSponsors(missionId);
       debugPrint('Sponsors loaded: ${_sponsors.length}');
       
-      debugPrint('Data loaded - Flights: ${_flights.length}, Accommodations: ${_accommodations.length}, Hotels: ${_hotels.length}, Itineraries: ${_itineraries.length}, Activities: ${_activities.length}, Tips: ${_tips.length}, Transports: ${_transports.length}, Destinations: ${_destinations.length}, Sponsors: ${_sponsors.length}');
+      debugPrint('Data loaded - Flights: ${_flights.length}, Accommodations: ${_accommodations.length}, Hotels: ${_hotels.length}, Itineraries: ${_itineraries.length}, Activities: ${_activities.length}, Attractions: ${_attractions.length}, Tours: ${_tours.length}, Technical Visits: ${_technicalVisits.length}, Tips: ${_tips.length}, Transports: ${_transports.length}, Destinations: ${_destinations.length}, Sponsors: ${_sponsors.length}');
       
       // Subscribe to real-time updates
       _subscribeToMissionUpdates(missionId);
@@ -147,6 +171,13 @@ class MissionProvider extends ChangeNotifier {
   }
   
   
+  // Refresh mission data
+  Future<void> refreshMissionData() async {
+    if (_currentMission != null) {
+      await loadMissionDetails(_currentMission!.id);
+    }
+  }
+
   // Filter activities by category
   List<ActivityModel> getActivitiesByCategory(String category) {
     return _activities.where((activity) => activity.category == category).toList();
@@ -191,13 +222,6 @@ class MissionProvider extends ChangeNotifier {
             notifyListeners();
           }
         });
-  }
-  
-  // Refresh mission data
-  Future<void> refreshMissionData() async {
-    if (_currentMission != null) {
-      await loadMissionDetails(_currentMission!.id);
-    }
   }
   
   // Load destinations for mission
@@ -291,6 +315,9 @@ class MissionProvider extends ChangeNotifier {
     _hotels.clear();
     _itineraries.clear();
     _activities.clear();
+    _attractions.clear();
+    _tours.clear();
+    _technicalVisits.clear();
     _itineraries.clear();
     _anugaItems.clear();
     _destinations.clear();
@@ -345,6 +372,78 @@ class MissionProvider extends ChangeNotifier {
           .toList();
     } catch (e) {
       debugPrint('Error loading hotels: $e');
+      return [];
+    }
+  }
+
+  // Load attractions for a mission
+  Future<List<AttractionModel>> _loadAttractions(String missionId) async {
+    try {
+      debugPrint('Loading attractions for mission: $missionId');
+      
+      final response = await SupabaseService.client
+          .from('attractions')
+          .select()
+          .eq('mission_id', missionId)
+          .eq('is_active', true)
+          .order('display_order', ascending: true)
+          .order('title', ascending: true);
+      
+      debugPrint('Attractions response: $response');
+      
+      return (response as List)
+          .map((json) => AttractionModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('Error loading attractions: $e');
+      return [];
+    }
+  }
+
+  // Load tours for a mission
+  Future<List<TourModel>> _loadTours(String missionId) async {
+    try {
+      debugPrint('Loading tours for mission: $missionId');
+      
+      final response = await SupabaseService.client
+          .from('tours')
+          .select()
+          .eq('mission_id', missionId)
+          .eq('is_active', true)
+          .order('display_order', ascending: true)
+          .order('title', ascending: true);
+      
+      debugPrint('Tours response: $response');
+      
+      return (response as List)
+          .map((json) => TourModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('Error loading tours: $e');
+      return [];
+    }
+  }
+
+  // Load technical visits for a mission
+  Future<List<TechnicalVisitModel>> _loadTechnicalVisits(String missionId) async {
+    try {
+      debugPrint('Loading technical visits for mission: $missionId');
+      
+      final response = await SupabaseService.client
+          .from('technical_visits')
+          .select()
+          .eq('mission_id', missionId)
+          .eq('is_active', true)
+          .order('display_order', ascending: true)
+          .order('title', ascending: true);
+      
+      debugPrint('Technical visits response: $response');
+      
+      return (response as List)
+          .map((json) => TechnicalVisitModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('Error loading technical visits: $e');
       return [];
     }
   }

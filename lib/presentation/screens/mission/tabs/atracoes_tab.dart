@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../data/models/activity_model.dart';
-import '../../../providers/mission_provider.dart';
+import '../../providers/mission_provider.dart';
+import '../../../widgets/expandable_detail_card.dart';
 import '../../../widgets/loading_widget.dart';
 import '../../../widgets/error_widget.dart';
-import '../../../widgets/expandable_detail_card.dart';
+import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../data/models/attraction_model.dart';
 
 class AtracoesTab extends StatelessWidget {
   const AtracoesTab({super.key});
@@ -27,9 +26,7 @@ class AtracoesTab extends StatelessWidget {
           );
         }
 
-        final attractions = provider.activities
-            .where((activity) => activity.isAttraction)
-            .toList();
+        final attractions = provider.attractions;
         
         if (attractions.isEmpty) {
           return const Center(
@@ -54,24 +51,20 @@ class AtracoesTab extends StatelessWidget {
           padding: const EdgeInsets.all(AppDimensions.paddingMedium),
           itemCount: attractions.length,
           itemBuilder: (context, index) {
-            final activity = attractions[index];
+            final attraction = attractions[index];
             return ExpandableDetailCard(
-              imageUrl: activity.imageUrl,
-              title: activity.name,
-              description: activity.description ?? 
-                (activity.address != null ? 'Local: ${activity.address}' : 'Atração turística e gastronômica'),
-              linkUrl: activity.website,
+              imageUrl: attraction.imageUrl,
+              title: attraction.title,
+              description: attraction.description ?? 
+                (attraction.address != null ? 'Local: ${attraction.address}' : 'Atração turística'),
               details: {
-                if (activity.address != null) 'Endereço': activity.address!,
-                if (activity.priceRange != null) 'Faixa de Preço': activity.priceRange!,
-                if (activity.category != null) 'Categoria': activity.category!,
-                if (activity.rating != null) 'Avaliação': '${activity.rating}/5 ⭐',
-                if (activity.phone != null) 'Telefone': activity.phone!,
-                if (activity.recommendedBy != null) 'Recomendado por': activity.recommendedBy!,
+                if (attraction.address != null) 'Endereço': attraction.address!,
+                if (attraction.category != null) 'Categoria': attraction.categoryDisplayName,
+                if (attraction.location != null) 'Localização': attraction.location!,
+                if (attraction.recommendedBy != null) 'Recomendado por': attraction.recommendedBy!,
               },
               tags: [
-                if (activity.category != null) activity.category!,
-                if (activity.priceRange != null) activity.priceRange!,
+                if (attraction.category != null) attraction.categoryDisplayName,
               ],
             );
           },
