@@ -1,0 +1,79 @@
+{
+    "mcpServers": {
+      "sequential-thinking": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-sequential-thinking"
+        ],
+        "env": {}
+      },
+      "Ref": {
+        "command": "npx",
+        "args": [
+          "ref-tools-mcp@latest"
+        ],
+        "env": {
+          "REF_API_KEY": "ref-499876bc4773030bf31b"
+        }
+      },
+      "brave-search": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-brave-search"
+        ],
+        "env": {
+          "BRAVE_API_KEY": "BSA3hsNI3F1Kl-NWLcjva2tRUnrTkTa"
+        }
+      },
+      "mcp-playwright": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@executeautomation/playwright-mcp-server"
+        ],
+        "env": {},
+        "disabled": true
+      },
+      "memory": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-memory"
+        ],
+        "env": {
+          "MEMORY_FILE_PATH": ""
+        }
+      },
+      "@21st-dev/magic": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@21st-dev/magic@latest",
+          "API_KEY=\"991883745dc5206c9f58323d2bccb609913d6024f58fb1eeb465258ae8916543\""
+        ],
+        "disabled": false
+      },
+      "postgresql": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-postgres",
+          "postgresql://local:postgres123@localhost:5432/sampledb?sslmode=disable&default_transaction_read_only=off"
+        ],
+        "env": {},
+        "disabled": false
+      },
+      "supabase": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@supabase/mcp-server-supabase@latest"
+        ],
+        "env": {
+          "SUPABASE_ACCESS_TOKEN": "sbp_0dcca7b1116277b7f361a124874e0ee043bf8b81"
+        }
+      }
+    }
+  }
