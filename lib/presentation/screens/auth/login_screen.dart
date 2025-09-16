@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Center(
                         child: SizedBox(
                           width: 320,
-                          height: 320,
+                          height: 82, // Maintains 2339:596 aspect ratio (320 * 596/2339 ≈ 82)
                           child: Image.asset(
                             'assets/images/logo-food.png',
                             fit: BoxFit.contain,
