@@ -57,34 +57,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 40),
                       
-                      // Logo and welcome
+                      // Logo
                       Center(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              width: 210,
-                              height: 210,
-                              child: Image.asset(
-                                'assets/images/logo-food.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            
-                            Text(
-                              AppStrings.welcome,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
+                        child: SizedBox(
+                          width: 210,
+                          height: 210,
+                          child: Image.asset(
+                            'assets/images/logo-food.png',
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                       
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 32),
                       
                       // Login form
                       Form(
