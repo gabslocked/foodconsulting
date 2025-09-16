@@ -175,16 +175,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final bytes = await _selectedImage!.readAsBytes();
           
           // Upload to Supabase Storage
-          final response = await authProvider.supabaseClient.storage
+          await authProvider.supabaseClient.storage
               .from('avatars')
-              .uploadBinary(fileName, bytes);
-          
-          if (response.isNotEmpty) {
-            // Get public URL
-            avatarUrl = authProvider.supabaseClient.storage
-                .from('avatars')
-                .getPublicUrl(fileName);
-          }
+              .upload(fileName, _selectedImage!, fileOptions: const FileOptions(upsert: true));
+
+          // Get public URL
+          avatarUrl = authProvider.supabaseClient.storage
+              .from('avatars')
+              .getPublicUrl(fileName);
         }
       }
 
@@ -228,6 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: const CustomAppBar(
         title: AppStrings.profile,
         showNotificationBadge: false,
+        showBackButton: true,
       ),
       body: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {

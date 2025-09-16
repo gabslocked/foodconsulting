@@ -12,7 +12,9 @@ import '../presentation/screens/mission/mission_detail_screen.dart';
 import '../presentation/screens/notifications/notifications_screen.dart';
 
 class AppRouter {
-  static final GoRouter router = GoRouter(
+  static GoRouter router(GlobalKey<NavigatorState> navigatorKey) {
+    return GoRouter(
+      navigatorKey: navigatorKey,
     initialLocation: '/',
     redirect: (BuildContext context, GoRouterState state) {
       final authProvider = context.read<AuthProvider>();

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -62,8 +64,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             backgroundColor: AppColors.success,
           ),
         );
-        
-        Navigator.of(context).pop();
+        if (widget.isFirstLogin) {
+          context.go('/home');
+        } else {
+          Navigator.of(context).pop();
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -81,8 +86,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: widget.isFirstLogin ? 'Alterar Senha - Primeiro Acesso' : 'Alterar Senha',
+        title: widget.isFirstLogin ? 'Definir Nova Senha' : 'Alterar Senha',
         showNotificationBadge: false,
+        showBackButton: !widget.isFirstLogin,
       ),
       body: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {

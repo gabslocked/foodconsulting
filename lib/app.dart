@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'main.dart';
 
 import 'core/config/theme_config.dart';
 import 'routes/app_router.dart';
@@ -14,7 +15,7 @@ class FoodConsultingApp extends StatelessWidget {
       theme: ThemeConfig.lightTheme,
       darkTheme: ThemeConfig.darkTheme,
       themeMode: ThemeMode.light,
-      routerConfig: AppRouter.router,
+      routerConfig: AppRouter.router(navigatorKey),
       debugShowCheckedModeBanner: false,
     );
   }

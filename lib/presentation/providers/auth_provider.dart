@@ -5,6 +5,7 @@ import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
+  final GlobalKey<NavigatorState> navigatorKey;
   final AuthRepository _authRepository = AuthRepository();
   
   UserModel? _user;
@@ -16,7 +17,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
   String? get error => _error;
   
-  AuthProvider() {
+  AuthProvider({required this.navigatorKey}) {
     _initializeAuth();
   }
   
@@ -27,6 +28,7 @@ class AuthProvider extends ChangeNotifier {
         _loadUserProfile();
       } else if (data.event == AuthChangeEvent.signedOut) {
         _user = null;
+        navigatorKey.currentState?.pushNamedAndRemoveUntil('login', (route) => false);
         notifyListeners();
       }
     });

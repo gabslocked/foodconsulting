@@ -10,6 +10,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool showNotificationBadge;
   final VoidCallback? onNotificationTap;
+  final bool showBackButton;
 
   const CustomAppBar({
     super.key,
@@ -17,6 +18,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showNotificationBadge = true,
     this.onNotificationTap,
+    this.showBackButton = false,
   });
 
   @override
@@ -27,6 +29,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
+      leading: showBackButton
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          : null,
       actions: [
         if (showNotificationBadge)
           Consumer<UserProvider>(

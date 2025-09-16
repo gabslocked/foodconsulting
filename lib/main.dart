@@ -9,6 +9,8 @@ import 'presentation/providers/mission_provider.dart';
 import 'presentation/providers/user_provider.dart';
 import 'presentation/providers/notification_provider.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -27,7 +29,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider(navigatorKey: navigatorKey)),
         ChangeNotifierProvider(create: (_) => MissionProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
