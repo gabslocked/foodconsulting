@@ -367,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: const Text(AppStrings.profile),
                 onTap: () {
                   Navigator.of(context).pop();
-                  context.go('/profile');
+                  context.push('/profile');
                 },
               ),
               ListTile(
@@ -375,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: const Text('Alterar Senha'),
                 onTap: () {
                   Navigator.of(context).pop();
-                  context.go('/change-password');
+                  context.push('/change-password');
                 },
               ),
               Consumer<MissionProvider>(
