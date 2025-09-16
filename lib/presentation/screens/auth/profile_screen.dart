@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
 import '../../../core/constants/app_colors.dart';
@@ -177,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Upload to Supabase Storage
           await authProvider.supabaseClient.storage
               .from('avatars')
-              .upload(fileName, _selectedImage!, fileOptions: const FileOptions(upsert: true));
+              .upload(fileName, _selectedImage!, fileOptions: FileOptions(upsert: true));
 
           // Get public URL
           avatarUrl = authProvider.supabaseClient.storage
