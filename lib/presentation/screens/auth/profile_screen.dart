@@ -176,14 +176,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final bytes = await _selectedImage!.readAsBytes();
           
           // Upload to Supabase Storage
-          await authProvider.supabaseClient.storage
-              .from('avatars')
-              .upload(fileName, _selectedImage!, fileOptions: FileOptions(upsert: true));
+          try {
+            await authProvider.supabaseClient.storage
+                .from('avatars')
+                .upload(fileName, _selectedImage!, fileOptions: FileOptions(upsert: true));
 
-          // Get public URL
-          avatarUrl = authProvider.supabaseClient.storage
-              .from('avatars')
-              .getPublicUrl(fileName);
+            // Get public URL
+            avatarUrl = authProvider.supabaseClient.storage
+                .from('avatars')
+                .getPublicUrl(fileName);
+          } catch (uploadError) {
+            print('Upload error: $uploadError');
+            throw Exception('Erro ao fazer upload da imagem: $uploadError');
+          }
         }
       }
 

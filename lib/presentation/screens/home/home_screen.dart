@@ -346,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.asset(
-                                  'assets/images/logo.png',
+                                  'assets/images/logo-food.png',
                                   fit: BoxFit.contain,
                                 ),
                               );
@@ -356,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Image.asset(
-                            'assets/images/logo.png',
+                            'assets/images/logo-food.png',
                             fit: BoxFit.contain,
                           ),
                         ),
