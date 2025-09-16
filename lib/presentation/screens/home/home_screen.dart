@@ -430,9 +430,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Text(AppStrings.cancel),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                context.read<AuthProvider>().signOut();
+                await context.read<AuthProvider>().signOut();
+                if (context.mounted) {
+                  context.go('/login');
+                }
               },
               child: const Text(
                 AppStrings.logout,
