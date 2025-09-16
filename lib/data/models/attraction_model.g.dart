@@ -20,13 +20,12 @@ AttractionModel _$AttractionModelFromJson(Map<String, dynamic> json) =>
       images:
           (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
       displayOrder: (json['display_order'] as num).toInt(),
+      cityOrder: (json['city_order'] as num?)?.toInt(),
       isActive: json['is_active'] as bool,
       metadata: json['metadata'] as Map<String, dynamic>?,
       recommendedBy: json['recommended_by'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+      createdAt: AttractionModel._dateTimeFromJson(json['created_at']),
+      updatedAt: AttractionModel._dateTimeFromJsonNullable(json['updated_at']),
     );
 
 Map<String, dynamic> _$AttractionModelToJson(AttractionModel instance) =>
@@ -42,6 +41,7 @@ Map<String, dynamic> _$AttractionModelToJson(AttractionModel instance) =>
       'image_url': instance.imageUrl,
       'images': instance.images,
       'display_order': instance.displayOrder,
+      'city_order': instance.cityOrder,
       'is_active': instance.isActive,
       'metadata': instance.metadata,
       'recommended_by': instance.recommendedBy,

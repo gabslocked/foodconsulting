@@ -53,26 +53,10 @@ class HotelTab extends StatelessWidget {
           itemCount: hotels.length,
           itemBuilder: (context, index) {
             final hotel = hotels[index];
-            List<String> tags = [];
-            if (hotel.category != null) tags.add(hotel.category!.toUpperCase());
-            if (hotel.priority == 'alta') tags.add('ALTA PRIORIDADE');
-            if (hotel.starRating != null) tags.add(hotel.starRatingDisplay);
-            
             return ExpandableDetailCard(
-              title: hotel.title,
-              description: hotel.content ?? 'Sem descrição disponível',
               imageUrl: hotel.imageUrl,
-              linkUrl: hotel.websiteUrl,
-              details: {
-                if (hotel.address != null) 'Endereço': hotel.address!,
-                if (hotel.phone != null) 'Telefone': hotel.phone!,
-                if (hotel.category != null) 'Cidade': hotel.category!.toUpperCase(),
-                if (hotel.starRating != null) 'Classificação': hotel.starRatingDisplay,
-                if (hotel.priority != null) 'Prioridade': hotel.priority == 'alta' ? 'Alta' : hotel.priority == 'baixa' ? 'Baixa' : 'Normal',
-                if (hotel.amenities.isNotEmpty) 'Comodidades': hotel.amenities.join(', '),
-                if (hotel.nearbyAttractions.isNotEmpty) 'Atrações Próximas': hotel.nearbyAttractions.join(', '),
-              },
-              tags: tags,
+              title: hotel.title,
+              description: hotel.content,
             );
           },
         );

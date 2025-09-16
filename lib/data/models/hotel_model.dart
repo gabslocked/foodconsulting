@@ -7,10 +7,10 @@ class HotelModel {
   final String id;
   @JsonKey(name: 'mission_id')
   final String missionId;
+  final String category;
   final String title;
-  final String? content;
-  final String? category; // 'düsseldorf', 'berlin', 'cologne', etc.
-  final String? priority; // 'alta', 'normal', 'baixa'
+  final String content;
+  final String priority;
   final String? address;
   final String? phone;
   @JsonKey(name: 'website_url')
@@ -21,86 +21,45 @@ class HotelModel {
   final String? imageUrl;
   final Map<String, dynamic>? metadata;
   @JsonKey(name: 'created_by')
-  final String? createdBy;
+  final String createdBy;
   @JsonKey(name: 'created_at')
-  final DateTime createdAt;
+  final String createdAt;
   @JsonKey(name: 'updated_at')
-  final DateTime? updatedAt;
+  final String updatedAt;
+  @JsonKey(name: 'display_order')
+  final int displayOrder;
 
   const HotelModel({
     required this.id,
     required this.missionId,
+    required this.category,
     required this.title,
-    this.content,
-    this.category,
-    this.priority,
+    required this.content,
+    required this.priority,
     this.address,
     this.phone,
     this.websiteUrl,
     this.starRating,
     this.imageUrl,
     this.metadata,
-    this.createdBy,
+    required this.createdBy,
     required this.createdAt,
-    this.updatedAt,
+    required this.updatedAt,
+    required this.displayOrder,
   });
 
   factory HotelModel.fromJson(Map<String, dynamic> json) => _$HotelModelFromJson(json);
   Map<String, dynamic> toJson() => _$HotelModelToJson(this);
 
-  HotelModel copyWith({
-    String? id,
-    String? missionId,
-    String? title,
-    String? content,
-    String? category,
-    String? priority,
-    String? address,
-    String? phone,
-    String? websiteUrl,
-    int? starRating,
-    String? imageUrl,
-    Map<String, dynamic>? metadata,
-    String? createdBy,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return HotelModel(
-      id: id ?? this.id,
-      missionId: missionId ?? this.missionId,
-      title: title ?? this.title,
-      content: content ?? this.content,
-      category: category ?? this.category,
-      priority: priority ?? this.priority,
-      address: address ?? this.address,
-      phone: phone ?? this.phone,
-      websiteUrl: websiteUrl ?? this.websiteUrl,
-      starRating: starRating ?? this.starRating,
-      imageUrl: imageUrl ?? this.imageUrl,
-      metadata: metadata ?? this.metadata,
-      createdBy: createdBy ?? this.createdBy,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
+  // Helper getters for metadata fields
+  String? get wifi => metadata?['wifi'];
+  String? get rooms => metadata?['rooms'];
+  List<String>? get services => metadata?['services']?.cast<String>();
+  List<String>? get wellness => metadata?['wellness']?.cast<String>();
+  String? get transport => metadata?['transport'];
+  List<String>? get facilities => metadata?['facilities']?.cast<String>();
+  List<String>? get restaurants => metadata?['restaurants']?.cast<String>();
+  List<String>? get nearbyAttractions => metadata?['nearby_attractions']?.cast<String>();
+  int? get metadataStarRating => metadata?['star_rating'];
 
-  // Helper method to get amenities from metadata
-  List<String> get amenities {
-    if (metadata == null) return [];
-    final amenitiesList = metadata!['amenities'] as List?;
-    return amenitiesList?.map((e) => e.toString()).toList() ?? [];
-  }
-
-  // Helper method to get star rating display
-  String get starRatingDisplay {
-    if (starRating == null) return '';
-    return '★' * starRating!;
-  }
-
-  // Helper method to get nearby attractions
-  List<String> get nearbyAttractions {
-    if (metadata == null) return [];
-    final attractions = metadata!['nearby_attractions'] as List?;
-    return attractions?.map((e) => e.toString()).toList() ?? [];
-  }
 }

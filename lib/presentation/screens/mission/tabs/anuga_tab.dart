@@ -60,15 +60,6 @@ class AnugaTab extends StatelessWidget {
               imageUrl: anuga.imageUrl,
               title: anuga.title,
               description: anuga.description ?? 'Feira internacional de alimentos',
-              linkUrl: anuga.linkUrl,
-              details: {
-                if (anuga.eventDate != null) 'Data do Evento': _formatFullDate(anuga.eventDate!),
-                if (anuga.location != null) 'Local': anuga.location!,
-                if (anuga.boothNumber != null) 'Número do Stand': anuga.boothNumber!,
-                if (anuga.contactInfo != null) 'Contato': anuga.contactInfo!,
-                'Ordem de Exibição': anuga.displayOrder.toString(),
-              },
-              tags: tags,
             );
           },
         );

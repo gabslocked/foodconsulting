@@ -358,35 +358,6 @@ class _PremiumMissionCardState extends State<PremiumMissionCard>
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.location_on,
-                    size: 16,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${widget.mission.city}, ${widget.mission.country}',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.95),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -399,60 +370,43 @@ class _PremiumMissionCardState extends State<PremiumMissionCard>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.accent.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(
-                color: AppColors.accent.withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.schedule,
-                  size: 18,
-                  color: AppColors.accent,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  DateFormatter.formatDateRange(widget.mission.startDate, widget.mission.endDate),
-                  style: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
           
-          // Description
-          Text(
-            'Consultoria especializada em segurança alimentar e implementação de sistemas HACCP para indústria alimentícia.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.6,
-              fontSize: 15,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 24),
-          
-          // Action row
+          // Action row with date and button
           Row(
             children: [
-              Expanded(
-                child: Container(),
+              // Mission date on left with icon
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      DateFormatter.formatDateRangeCompact(widget.mission.startDate, widget.mission.endDate),
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 16),
+              const Spacer(),
               // Premium CTA
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

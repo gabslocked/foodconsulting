@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
@@ -9,20 +10,12 @@ class ExpandableDetailCard extends StatelessWidget {
   final String? imageUrl;
   final String title;
   final String description;
-  final String? linkUrl;
-  final String? additionalInfo;
-  final List<String>? tags;
-  final Map<String, String>? details;
 
   const ExpandableDetailCard({
     super.key,
     this.imageUrl,
     required this.title,
     required this.description,
-    this.linkUrl,
-    this.additionalInfo,
-    this.tags,
-    this.details,
   });
 
   @override
@@ -70,40 +63,19 @@ class ExpandableDetailCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (linkUrl != null && linkUrl!.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            Icons.link,
-                            color: AppColors.primary,
-                            size: 16,
-                          ),
-                        ),
-                      ],
-                    ],
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: AppDimensions.spacingSmall),
                   Text(
-                    description,
+                    _stripMarkdown(description),
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
@@ -294,133 +266,74 @@ class ExpandableDetailCard extends StatelessWidget {
                                 const SizedBox(height: 20),
                                 
                                 // Description
-                                Text(
-                                  description,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.textSecondary,
-                                    height: 1.6,
+                                Markdown(
+                                  data: description,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  styleSheet: MarkdownStyleSheet(
+                                    p: const TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textSecondary,
+                                      height: 1.6,
+                                    ),
+                                    strong: const TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.6,
+                                    ),
+                                    em: const TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textSecondary,
+                                      fontStyle: FontStyle.italic,
+                                      height: 1.6,
+                                    ),
+                                    h1: const TextStyle(
+                                      fontSize: 24,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.3,
+                                    ),
+                                    h2: const TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.3,
+                                    ),
+                                    h3: const TextStyle(
+                                      fontSize: 18,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.3,
+                                    ),
+                                    blockquote: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textSecondary,
+                                      fontStyle: FontStyle.italic,
+                                      height: 1.6,
+                                    ),
+                                    code: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.primary,
+                                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                                      fontFamily: 'monospace',
+                                    ),
+                                    listBullet: const TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textSecondary,
+                                      height: 1.6,
+                                    ),
                                   ),
+                                  onTapLink: (text, href, title) {
+                                    if (href != null) {
+                                      _launchUrl(href);
+                                    }
+                                  },
                                 ),
                                 
-                                // Link button
-                                if (linkUrl != null && linkUrl!.isNotEmpty) ...[
-                                  const SizedBox(height: 16),
-                                  ElevatedButton.icon(
-                                    onPressed: () => _launchUrl(linkUrl!),
-                                    icon: const Icon(Icons.open_in_new, size: 16),
-                                    label: const Text('Abrir Link'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                                 
-                                // Additional info
-                                if (additionalInfo != null) ...[
-                                  const SizedBox(height: 20),
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.05),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: AppColors.primary.withOpacity(0.1),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      additionalInfo!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.textSecondary,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                                 
-                                // Tags
-                                if (tags != null && tags!.isNotEmpty) ...[
-                                  const SizedBox(height: 20),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: tags!.map((tag) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.accent.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                          color: AppColors.accent.withOpacity(0.3),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        tag,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.accent,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )).toList(),
-                                  ),
-                                ],
                                 
-                                // Details
-                                if (details != null && details!.isNotEmpty) ...[
-                                  const SizedBox(height: 24),
-                                  const Text(
-                                    'Detalhes',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  ...details!.entries.map((entry) => Container(
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          child: Text(
-                                            entry.key,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: AppColors.textPrimary,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Expanded(
-                                          child: Text(
-                                            entry.value,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: AppColors.textSecondary,
-                                              height: 1.4,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                                ],
                                 
                                 const SizedBox(height: 40),
                               ],
@@ -437,6 +350,37 @@ class ExpandableDetailCard extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _stripMarkdown(String text) {
+    // Remove markdown formatting for preview
+    String result = text;
+    
+    // Bold **text** and __text__
+    result = result.replaceAllMapped(RegExp(r'\*\*(.*?)\*\*'), (match) => match.group(1) ?? '');
+    result = result.replaceAllMapped(RegExp(r'__(.*?)__'), (match) => match.group(1) ?? '');
+    
+    // Italic *text* and _text_
+    result = result.replaceAllMapped(RegExp(r'\*(.*?)\*'), (match) => match.group(1) ?? '');
+    result = result.replaceAllMapped(RegExp(r'_(.*?)_'), (match) => match.group(1) ?? '');
+    
+    // Code `text`
+    result = result.replaceAllMapped(RegExp(r'`(.*?)`'), (match) => match.group(1) ?? '');
+    
+    // Links [text](url)
+    result = result.replaceAllMapped(RegExp(r'\[([^\]]+)\]\([^)]+\)'), (match) => match.group(1) ?? '');
+    
+    // Headers # ## ###
+    result = result.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+    
+    // Blockquotes >
+    result = result.replaceAll(RegExp(r'^>\s+', multiLine: true), '');
+    
+    // Lists
+    result = result.replaceAll(RegExp(r'^[-*+]\s+', multiLine: true), '• ');
+    result = result.replaceAll(RegExp(r'^\d+\.\s+', multiLine: true), '• ');
+    
+    return result.trim();
   }
 
   Future<void> _launchUrl(String url) async {

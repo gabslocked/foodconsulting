@@ -57,18 +57,7 @@ class DestinationsTab extends StatelessWidget {
               imageUrl: destination.imageUrl,
               title: destination.name,
               description: destination.description ?? 
-                '${destination.city}, ${destination.country}',
-              linkUrl: destination.linkUrl,
-              details: {
-                'Cidade': destination.city,
-                'País': destination.country,
-                if (destination.coordinates != null) 'Coordenadas': 
-                  'Lat: ${destination.coordinates!['lat']}, Long: ${destination.coordinates!['lng']}',
-              },
-              tags: [
-                destination.country,
-                destination.city,
-              ],
+                  'Destino da missão ${destination.name}',
             );
           },
         );

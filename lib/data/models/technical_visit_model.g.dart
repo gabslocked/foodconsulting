@@ -20,9 +20,7 @@ TechnicalVisitModel _$TechnicalVisitModelFromJson(Map<String, dynamic> json) =>
       contactPerson: json['contact_person'] as String?,
       contactEmail: json['contact_email'] as String?,
       contactPhone: json['contact_phone'] as String?,
-      visitDate: json['visit_date'] == null
-          ? null
-          : DateTime.parse(json['visit_date'] as String),
+      visitDate: TechnicalVisitModel._dateFromJsonNullable(json['visit_date']),
       visitTime: json['visit_time'] as String?,
       imageUrl: json['image_url'] as String?,
       images:
@@ -31,10 +29,9 @@ TechnicalVisitModel _$TechnicalVisitModelFromJson(Map<String, dynamic> json) =>
       isActive: json['is_active'] as bool,
       metadata: json['metadata'] as Map<String, dynamic>?,
       recommendedBy: json['recommended_by'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+      createdAt: TechnicalVisitModel._dateTimeFromJson(json['created_at']),
+      updatedAt:
+          TechnicalVisitModel._dateTimeFromJsonNullable(json['updated_at']),
     );
 
 Map<String, dynamic> _$TechnicalVisitModelToJson(

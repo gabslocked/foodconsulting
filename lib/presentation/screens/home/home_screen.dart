@@ -14,7 +14,7 @@ import '../../widgets/loading_widget.dart';
 import '../../widgets/error_widget.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/sponsors_banner.dart';
-import '../../widgets/mission_card_skeleton.dart';
+import '../../widgets/skeleton_loader.dart';
 import 'widgets/mission_card.dart';
 import 'widgets/premium_mission_card.dart';
 import 'widgets/upcoming_activity_card.dart';
@@ -44,6 +44,12 @@ class _HomeScreenState extends State<HomeScreen> {
       missionProvider.loadUserMissions(),
       notificationProvider.loadUnreadCount(),
     ]);
+    
+    // Load sponsors for the first mission if available
+    if (missionProvider.missions.isNotEmpty) {
+      final firstMissionId = missionProvider.missions.first.id;
+      await missionProvider.loadMissionDetails(firstMissionId);
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -72,11 +78,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: AppDimensions.spacing24),
                   
                   // Missions section
-                  _buildMissionsSection(missionProvider),
+                  missionProvider.isLoading 
+                    ? _buildMissionsSkeletonSection()
+                    : _buildMissionsSection(missionProvider),
                   const SizedBox(height: AppDimensions.spacing24),
                   
                   // Sponsors section
-                  _buildSponsorsSection(missionProvider),
+                  missionProvider.isLoading 
+                    ? _buildSponsorsSkeletonSection()
+                    : _buildSponsorsSection(missionProvider),
                 ],
               ),
             );
@@ -244,18 +254,47 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSponsorsSection(MissionProvider missionProvider) {
+  Widget _buildMissionsSkeletonSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Apoiadores',
+          'Suas Missões',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: AppDimensions.spacing16),
-        
+        const MissionCardSkeleton(),
+        const MissionCardSkeleton(),
+      ],
+    );
+  }
+
+  Widget _buildSponsorsSkeletonSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Apoiadores',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingMedium),
+        const SponsorImageSkeleton(),
+        const SponsorImageSkeleton(),
+        const SponsorImageSkeleton(),
+      ],
+    );
+  }
+
+  Widget _buildSponsorsSection(MissionProvider missionProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Consumer<MissionProvider>(
           builder: (context, provider, child) {
             return SponsorsBanner(sponsors: provider.sponsors);

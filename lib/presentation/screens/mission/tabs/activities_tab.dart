@@ -57,20 +57,7 @@ class ActivitiesTab extends StatelessWidget {
               imageUrl: activity.imageUrl,
               title: activity.name,
               description: activity.description ?? 
-                (activity.address != null ? 'Local: ${activity.address}' : 'Atividade gastronômica'),
-              linkUrl: activity.website,
-              details: {
-                if (activity.address != null) 'Endereço': activity.address!,
-                if (activity.priceRange != null) 'Faixa de Preço': activity.priceRange!,
-                if (activity.category != null) 'Categoria': activity.category!,
-                if (activity.rating != null) 'Avaliação': '${activity.rating}/5 ⭐',
-                if (activity.phone != null) 'Telefone': activity.phone!,
-                if (activity.recommendedBy != null) 'Recomendado por': activity.recommendedBy!,
-              },
-              tags: [
-                if (activity.category != null) activity.category!,
-                if (activity.priceRange != null) activity.priceRange!,
-              ],
+                  'Atividade da missão ${activity.name}',
             );
           },
         );

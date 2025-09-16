@@ -9,7 +9,7 @@ class TechnicalVisitModel {
   final String missionId;
   final String title;
   final String? description;
-  final String? category; // 'wholesale', 'retail', 'logistics', 'manufacturing', etc.
+  final String? category;
   @JsonKey(name: 'company_name')
   final String? companyName;
   final String? location;
@@ -21,7 +21,7 @@ class TechnicalVisitModel {
   final String? contactEmail;
   @JsonKey(name: 'contact_phone')
   final String? contactPhone;
-  @JsonKey(name: 'visit_date')
+  @JsonKey(name: 'visit_date', fromJson: _dateFromJsonNullable)
   final DateTime? visitDate;
   @JsonKey(name: 'visit_time')
   final String? visitTime;
@@ -35,9 +35,9 @@ class TechnicalVisitModel {
   final Map<String, dynamic>? metadata;
   @JsonKey(name: 'recommended_by')
   final String? recommendedBy;
-  @JsonKey(name: 'created_at')
+  @JsonKey(name: 'created_at', fromJson: _dateTimeFromJson)
   final DateTime createdAt;
-  @JsonKey(name: 'updated_at')
+  @JsonKey(name: 'updated_at', fromJson: _dateTimeFromJsonNullable)
   final DateTime? updatedAt;
 
   const TechnicalVisitModel({
@@ -68,82 +68,28 @@ class TechnicalVisitModel {
   factory TechnicalVisitModel.fromJson(Map<String, dynamic> json) => _$TechnicalVisitModelFromJson(json);
   Map<String, dynamic> toJson() => _$TechnicalVisitModelToJson(this);
 
-  TechnicalVisitModel copyWith({
-    String? id,
-    String? missionId,
-    String? title,
-    String? description,
-    String? category,
-    String? companyName,
-    String? location,
-    String? address,
-    Map<String, dynamic>? coordinates,
-    String? contactPerson,
-    String? contactEmail,
-    String? contactPhone,
-    DateTime? visitDate,
-    String? visitTime,
-    String? imageUrl,
-    List<String>? images,
-    int? displayOrder,
-    bool? isActive,
-    Map<String, dynamic>? metadata,
-    String? recommendedBy,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return TechnicalVisitModel(
-      id: id ?? this.id,
-      missionId: missionId ?? this.missionId,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      category: category ?? this.category,
-      companyName: companyName ?? this.companyName,
-      location: location ?? this.location,
-      address: address ?? this.address,
-      coordinates: coordinates ?? this.coordinates,
-      contactPerson: contactPerson ?? this.contactPerson,
-      contactEmail: contactEmail ?? this.contactEmail,
-      contactPhone: contactPhone ?? this.contactPhone,
-      visitDate: visitDate ?? this.visitDate,
-      visitTime: visitTime ?? this.visitTime,
-      imageUrl: imageUrl ?? this.imageUrl,
-      images: images ?? this.images,
-      displayOrder: displayOrder ?? this.displayOrder,
-      isActive: isActive ?? this.isActive,
-      metadata: metadata ?? this.metadata,
-      recommendedBy: recommendedBy ?? this.recommendedBy,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
 
-  // Helper method to get category display name
-  String get categoryDisplayName {
-    switch (category?.toLowerCase()) {
-      case 'wholesale':
-        return 'Atacado';
-      case 'retail':
-        return 'Varejo';
-      case 'logistics':
-        return 'Logística';
-      case 'manufacturing':
-        return 'Manufatura';
-      case 'business':
-        return 'Empresarial';
-      default:
-        return category ?? 'Visita Técnica';
+  static DateTime? _dateFromJsonNullable(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      return DateTime.parse(value);
     }
+    return DateTime.parse(value.toString());
   }
 
-  // Helper method to get visit date display
-  String get visitDateDisplay {
-    if (visitDate == null) return 'Data não informada';
-    return '${visitDate!.day}/${visitDate!.month}/${visitDate!.year}';
+  static DateTime _dateTimeFromJson(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is String) {
+      return DateTime.parse(value.replaceAll(' ', 'T'));
+    }
+    return DateTime.parse(value.toString());
   }
 
-  // Helper method to get visit time display
-  String get visitTimeDisplay {
-    return visitTime ?? 'Horário não informado';
+  static DateTime? _dateTimeFromJsonNullable(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      return DateTime.parse(value.replaceAll(' ', 'T'));
+    }
+    return DateTime.parse(value.toString());
   }
 }

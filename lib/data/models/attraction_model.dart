@@ -9,7 +9,7 @@ class AttractionModel {
   final String missionId;
   final String title;
   final String? description;
-  final String? category; // 'museum', 'landmark', 'park', 'shopping', etc.
+  final String? category;
   final String? location;
   final String? address;
   final Map<String, dynamic>? coordinates;
@@ -18,14 +18,16 @@ class AttractionModel {
   final List<String>? images;
   @JsonKey(name: 'display_order')
   final int displayOrder;
+  @JsonKey(name: 'city_order')
+  final int? cityOrder;
   @JsonKey(name: 'is_active')
   final bool isActive;
   final Map<String, dynamic>? metadata;
   @JsonKey(name: 'recommended_by')
   final String? recommendedBy;
-  @JsonKey(name: 'created_at')
+  @JsonKey(name: 'created_at', fromJson: _dateTimeFromJson)
   final DateTime createdAt;
-  @JsonKey(name: 'updated_at')
+  @JsonKey(name: 'updated_at', fromJson: _dateTimeFromJsonNullable)
   final DateTime? updatedAt;
 
   const AttractionModel({
@@ -40,6 +42,28 @@ class AttractionModel {
     this.imageUrl,
     this.images,
     required this.displayOrder,
+    this.cityOrder,
+    required this.isActive,
+    this.metadata,
+    this.recommendedBy,
+    required this.createdAt,
+    this.updatedAt,
+  });
+
+
+  const AttractionModel._({
+    required this.id,
+    required this.missionId,
+    required this.title,
+    this.description,
+    this.category,
+    this.location,
+    this.address,
+    this.coordinates,
+    this.imageUrl,
+    this.images,
+    required this.displayOrder,
+    this.cityOrder,
     required this.isActive,
     this.metadata,
     this.recommendedBy,
@@ -50,63 +74,19 @@ class AttractionModel {
   factory AttractionModel.fromJson(Map<String, dynamic> json) => _$AttractionModelFromJson(json);
   Map<String, dynamic> toJson() => _$AttractionModelToJson(this);
 
-  AttractionModel copyWith({
-    String? id,
-    String? missionId,
-    String? title,
-    String? description,
-    String? category,
-    String? location,
-    String? address,
-    Map<String, dynamic>? coordinates,
-    String? imageUrl,
-    List<String>? images,
-    int? displayOrder,
-    bool? isActive,
-    Map<String, dynamic>? metadata,
-    String? recommendedBy,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return AttractionModel(
-      id: id ?? this.id,
-      missionId: missionId ?? this.missionId,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      category: category ?? this.category,
-      location: location ?? this.location,
-      address: address ?? this.address,
-      coordinates: coordinates ?? this.coordinates,
-      imageUrl: imageUrl ?? this.imageUrl,
-      images: images ?? this.images,
-      displayOrder: displayOrder ?? this.displayOrder,
-      isActive: isActive ?? this.isActive,
-      metadata: metadata ?? this.metadata,
-      recommendedBy: recommendedBy ?? this.recommendedBy,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
+  static DateTime _dateTimeFromJson(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is String) {
+      return DateTime.parse(value.replaceAll(' ', 'T'));
+    }
+    return DateTime.parse(value.toString());
   }
 
-  // Helper method to get category display name
-  String get categoryDisplayName {
-    switch (category?.toLowerCase()) {
-      case 'museum':
-        return 'Museu';
-      case 'landmark':
-        return 'Marco Histórico';
-      case 'park':
-        return 'Parque';
-      case 'shopping':
-        return 'Compras';
-      case 'religious':
-        return 'Religioso';
-      case 'palace':
-        return 'Palácio';
-      case 'restaurant':
-        return 'Restaurante';
-      default:
-        return category ?? 'Atração';
+  static DateTime? _dateTimeFromJsonNullable(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      return DateTime.parse(value.replaceAll(' ', 'T'));
     }
+    return DateTime.parse(value.toString());
   }
 }

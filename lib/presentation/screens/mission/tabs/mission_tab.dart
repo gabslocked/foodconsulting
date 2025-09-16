@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../../providers/mission_provider.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -59,11 +60,61 @@ class MissionTab extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: AppDimensions.spacing8),
-                      Text(
-                        mission.description ?? '',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
+                      MarkdownBody(
+                        data: mission.description ?? '',
+                        styleSheet: MarkdownStyleSheet(
+                          p: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                            height: 1.4,
+                          ),
+                          strong: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            height: 1.4,
+                          ),
+                          em: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                            fontStyle: FontStyle.italic,
+                            height: 1.4,
+                          ),
+                          h1: const TextStyle(
+                            fontSize: 18,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            height: 1.3,
+                          ),
+                          h2: const TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            height: 1.3,
+                          ),
+                          h3: const TextStyle(
+                            fontSize: 15,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                          blockquote: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                            fontStyle: FontStyle.italic,
+                            height: 1.4,
+                          ),
+                          code: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.primary,
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            fontFamily: 'monospace',
+                          ),
+                          listBullet: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                            height: 1.4,
+                          ),
                         ),
                       ),
                       const SizedBox(height: AppDimensions.spacing16),
@@ -76,7 +127,9 @@ class MissionTab extends StatelessWidget {
                           ),
                           const SizedBox(width: AppDimensions.spacing8),
                           Text(
-                            '${mission.city}, ${mission.country}',
+                            mission.city.isNotEmpty 
+                              ? '${mission.city}, ${mission.country}'
+                              : mission.country,
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textPrimary,

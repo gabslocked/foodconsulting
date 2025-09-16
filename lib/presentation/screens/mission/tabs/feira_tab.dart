@@ -60,15 +60,6 @@ class FeiraTab extends StatelessWidget {
               imageUrl: feira.imageUrl,
               title: feira.title,
               description: feira.description ?? 'Feira internacional de alimentos',
-              linkUrl: feira.linkUrl,
-              details: {
-                if (feira.eventDate != null) 'Data do Evento': _formatFullDate(feira.eventDate!),
-                if (feira.location != null) 'Local': feira.location!,
-                if (feira.boothNumber != null) 'Número do Stand': feira.boothNumber!,
-                if (feira.contactInfo != null) 'Contato': feira.contactInfo!,
-                'Ordem de Exibição': feira.displayOrder.toString(),
-              },
-              tags: tags,
             );
           },
         );

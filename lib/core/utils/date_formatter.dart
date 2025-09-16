@@ -38,10 +38,29 @@ class DateFormatter {
   }
   
   static String formatDateRange(DateTime start, DateTime end) {
+    final startFormat = DateFormat('dd MMM', 'pt_BR');
+    final endFormat = DateFormat('dd MMM yyyy', 'pt_BR');
+    
     if (start.year == end.year && start.month == end.month) {
-      return '${start.day} - ${formatDate(end)}';
+      return '${start.day}-${end.day} ${DateFormat('MMM yyyy', 'pt_BR').format(end)}';
+    } else if (start.year == end.year) {
+      return '${startFormat.format(start)} - ${endFormat.format(end)}';
     }
-    return '${formatDate(start)} - ${formatDate(end)}';
+    return '${startFormat.format(start)} - ${endFormat.format(end)}';
+  }
+  
+  static String formatDateRangeCompact(DateTime start, DateTime end) {
+    final monthNames = {
+      1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
+      7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez'
+    };
+    
+    if (start.year == end.year && start.month == end.month) {
+      return '${start.day}-${end.day} ${monthNames[end.month]}';
+    } else if (start.year == end.year) {
+      return '${start.day} ${monthNames[start.month]} - ${end.day} ${monthNames[end.month]}';
+    }
+    return '${start.day} ${monthNames[start.month]} ${start.year} - ${end.day} ${monthNames[end.month]} ${end.year}';
   }
   
   static String getRelativeDate(DateTime date) {

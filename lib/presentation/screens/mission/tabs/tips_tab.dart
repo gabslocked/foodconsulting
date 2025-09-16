@@ -61,12 +61,6 @@ class TipsTab extends StatelessWidget {
               title: tip.title,
               description: tip.content ?? 'Sem descrição disponível',
               imageUrl: tip.imageUrl,
-              details: {
-                if (tip.category != null) 'Categoria': tip.category!,
-                if (tip.priority != null) 'Prioridade': tip.priority == 'alta' ? 'Alta' : tip.priority == 'baixa' ? 'Baixa' : 'Normal',
-                if (tip.authorName != null) 'Autor': tip.authorName!,
-              },
-              tags: tags,
             );
           },
         );

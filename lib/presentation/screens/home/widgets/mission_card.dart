@@ -82,7 +82,7 @@ class _MissionCardState extends State<MissionCard>
           onTapCancel: () => _animationController.reverse(),
         borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
         child: Semantics(
-          label: 'Missão ${widget.mission.name} em ${widget.mission.city}, ${widget.mission.country}. Toque para ver detalhes',
+          label: 'Missão ${widget.mission.name}. Toque para ver detalhes',
           button: true,
           child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,47 +143,7 @@ class _MissionCardState extends State<MissionCard>
                   ),
                   const SizedBox(height: AppDimensions.spacing8),
                   
-                  // Location
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: AppDimensions.spacing4),
-                      Expanded(
-                        child: Text(
-                          '${widget.mission.city}, ${widget.mission.country}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppDimensions.spacing8),
-                  
-                  // Dates
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.calendar_today_outlined,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: AppDimensions.spacing4),
-                      Text(
-                        DateFormatter.formatDateRange(widget.mission.startDate, widget.mission.endDate),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppDimensions.spacing12),
+                  const SizedBox(height: AppDimensions.spacing4),
                   
                   // Status indicator only
                   Row(

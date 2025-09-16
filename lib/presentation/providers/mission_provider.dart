@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import '../../data/models/mission_model.dart';
 import '../../data/models/flight_model.dart';
 import '../../data/models/accommodation_model.dart';
-import '../../data/models/hotel_model.dart';
 import '../../data/models/itinerary_model.dart';
 import '../../data/models/activity_model.dart';
-import '../../data/models/attraction_model.dart';
-import '../../data/models/tour_model.dart';
-import '../../data/models/technical_visit_model.dart';
 import '../../data/models/tip_model.dart';
 import '../../data/models/destination_model.dart';
 import '../../data/models/transport_model.dart';
 import '../../data/models/sponsor_model.dart';
 import '../../data/models/anuga_model.dart';
+import '../../data/models/technical_visit_model.dart';
+import '../../data/models/tour_model.dart';
+import '../../data/models/attraction_model.dart';
+import '../../data/models/hotel_model.dart';
 import '../../data/repositories/mission_repository.dart';
 import '../../data/services/supabase_service.dart';
 import '../../data/services/notification_service.dart';
@@ -26,17 +26,17 @@ class MissionProvider extends ChangeNotifier {
   MissionModel? _currentMission;
   List<FlightModel> _flights = [];
   List<AccommodationModel> _accommodations = [];
-  List<HotelModel> _hotels = [];
   List<ActivityModel> _activities = [];
-  List<AttractionModel> _attractions = [];
-  List<TourModel> _tours = [];
-  List<TechnicalVisitModel> _technicalVisits = [];
   List<TipModel> _tips = [];
   List<DestinationModel> _destinations = [];
   List<TransportModel> _transports = [];
   List<SponsorModel> _sponsors = [];
   List<ItineraryModel> _itineraries = [];
   List<AnugaModel> _anugaItems = [];
+  List<TechnicalVisitModel> _technicalVisits = [];
+  List<TourModel> _tours = [];
+  List<AttractionModel> _attractions = [];
+  List<HotelModel> _hotels = [];
   
   bool _isLoading = false;
   bool _isLoadingDetails = false;
@@ -49,17 +49,17 @@ class MissionProvider extends ChangeNotifier {
   MissionModel? get currentMission => _currentMission;
   List<FlightModel> get flights => _flights;
   List<AccommodationModel> get accommodations => _accommodations;
-  List<HotelModel> get hotels => _hotels;
   List<ItineraryModel> get itineraries => _itineraries;
   List<ActivityModel> get activities => _activities;
-  List<AttractionModel> get attractions => _attractions;
-  List<TourModel> get tours => _tours;
-  List<TechnicalVisitModel> get technicalVisits => _technicalVisits;
   List<TipModel> get tips => _tips;
   List<DestinationModel> get destinations => _destinations;
   List<TransportModel> get transports => _transports;
   List<SponsorModel> get sponsors => _sponsors;
   List<AnugaModel> get anugaItems => _anugaItems;
+  List<TechnicalVisitModel> get technicalVisits => _technicalVisits;
+  List<TourModel> get tours => _tours;
+  List<AttractionModel> get attractions => _attractions;
+  List<HotelModel> get hotels => _hotels;
   
   bool get isLoading => _isLoading;
   bool get isLoadingDetails => _isLoadingDetails;
@@ -111,35 +111,27 @@ class MissionProvider extends ChangeNotifier {
       final tips = await _missionRepository.getMissionTips(missionId);
       debugPrint('Tips loaded: ${tips.length}');
       
-      debugPrint('Loading hotels...');
-      final hotels = await _loadHotels(missionId);
-      debugPrint('Hotels loaded: ${hotels.length}');
-      
-      debugPrint('Loading attractions...');
-      final attractions = await _loadAttractions(missionId);
-      debugPrint('Attractions loaded: ${attractions.length}');
-      
-      debugPrint('Loading tours...');
-      final tours = await _loadTours(missionId);
-      debugPrint('Tours loaded: ${tours.length}');
-      
-      debugPrint('Loading technical visits...');
-      final technicalVisits = await _loadTechnicalVisits(missionId);
-      debugPrint('Technical visits loaded: ${technicalVisits.length}');
-      
       // Assign loaded data to provider variables
       _flights = flights;
       _accommodations = accommodations;
       _activities = activities;
-      _attractions = attractions;
-      _tours = tours;
-      _technicalVisits = technicalVisits;
       _tips = tips;
-      _hotels = hotels;
       
       debugPrint('Loading itineraries...');
       await loadItineraries(missionId);
       await loadAnugaItems(missionId);
+      
+      debugPrint('Loading technical visits...');
+      await loadTechnicalVisits(missionId);
+      
+      debugPrint('Loading tours...');
+      await loadTours(missionId);
+      
+      debugPrint('Loading attractions...');
+      await loadAttractions(missionId);
+      
+      debugPrint('Loading hotels...');
+      await loadHotels(missionId);
       
       debugPrint('Loading destinations...');
       _destinations = await _loadDestinations(missionId);
@@ -153,7 +145,7 @@ class MissionProvider extends ChangeNotifier {
       _sponsors = await _loadSponsors(missionId);
       debugPrint('Sponsors loaded: ${_sponsors.length}');
       
-      debugPrint('Data loaded - Flights: ${_flights.length}, Accommodations: ${_accommodations.length}, Hotels: ${_hotels.length}, Itineraries: ${_itineraries.length}, Activities: ${_activities.length}, Attractions: ${_attractions.length}, Tours: ${_tours.length}, Technical Visits: ${_technicalVisits.length}, Tips: ${_tips.length}, Transports: ${_transports.length}, Destinations: ${_destinations.length}, Sponsors: ${_sponsors.length}');
+      debugPrint('Data loaded - Flights: ${_flights.length}, Accommodations: ${_accommodations.length}, Itineraries: ${_itineraries.length}, Activities: ${_activities.length}, Tips: ${_tips.length}, Transports: ${_transports.length}, Destinations: ${_destinations.length}, Sponsors: ${_sponsors.length}');
       
       // Subscribe to real-time updates
       _subscribeToMissionUpdates(missionId);
@@ -171,13 +163,6 @@ class MissionProvider extends ChangeNotifier {
   }
   
   
-  // Refresh mission data
-  Future<void> refreshMissionData() async {
-    if (_currentMission != null) {
-      await loadMissionDetails(_currentMission!.id);
-    }
-  }
-
   // Filter activities by category
   List<ActivityModel> getActivitiesByCategory(String category) {
     return _activities.where((activity) => activity.category == category).toList();
@@ -224,13 +209,21 @@ class MissionProvider extends ChangeNotifier {
         });
   }
   
+  // Refresh mission data
+  Future<void> refreshMissionData() async {
+    if (_currentMission != null) {
+      await loadMissionDetails(_currentMission!.id);
+    }
+  }
+  
   // Load destinations for mission
   Future<List<DestinationModel>> _loadDestinations(String missionId) async {
     try {
       final response = await SupabaseService.client
           .from('destinations')
           .select()
-          .eq('mission_id', missionId);
+          .eq('mission_id', missionId)
+          .order('display_order', ascending: true);
       
       return (response as List)
           .map((json) => DestinationModel.fromJson(json))
@@ -280,29 +273,46 @@ class MissionProvider extends ChangeNotifier {
   // Get mission participants
   Future<List<Map<String, dynamic>>> getMissionParticipants(String missionId) async {
     try {
-      final response = await SupabaseService.client
+      debugPrint('🔄 Loading mission participants for: $missionId');
+      
+      // Get participant user IDs from mission_participants table
+      final participantsResponse = await SupabaseService.client
           .from('mission_participants')
-          .select('''
-            profiles(
-              id,
-              full_name,
-              email,
-              phone,
-              company,
-              avatar_url
-            )
-          ''')
+          .select('user_id')
           .eq('mission_id', missionId)
           .eq('status', 'confirmed');
       
-      debugPrint('Mission participants response: $response');
+      debugPrint('📋 Found ${(participantsResponse as List).length} confirmed participants');
       
-      return (response as List)
-          .where((item) => item['profiles'] != null)
-          .map((item) => item['profiles'] as Map<String, dynamic>)
+      if ((participantsResponse as List).isEmpty) {
+        debugPrint('⚠️ No confirmed participants found for mission $missionId');
+        return [];
+      }
+      
+      // Extract user IDs
+      final userIds = (participantsResponse as List)
+          .map((item) => item['user_id'] as String)
           .toList();
+      
+      // Get all profiles and filter for participants
+      final profilesResponse = await SupabaseService.client
+          .from('profiles')
+          .select('id, full_name, email, phone, company, avatar_url');
+      
+      // Filter to get only participants with existing profiles
+      final participantProfiles = (profilesResponse as List)
+          .where((profile) => userIds.contains(profile['id']))
+          .toList();
+      
+      // Sort participants alphabetically by full_name
+      participantProfiles.sort((a, b) => 
+          (a['full_name'] as String).compareTo(b['full_name'] as String));
+      
+      debugPrint('✅ Loaded ${participantProfiles.length} participant profiles (sorted alphabetically)');
+      
+      return participantProfiles.map((item) => item as Map<String, dynamic>).toList();
     } catch (e) {
-      debugPrint('Error loading mission participants: $e');
+      debugPrint('💥 Error loading mission participants: $e');
       return [];
     }
   }
@@ -312,12 +322,8 @@ class MissionProvider extends ChangeNotifier {
     _currentMission = null;
     _flights.clear();
     _accommodations.clear();
-    _hotels.clear();
     _itineraries.clear();
     _activities.clear();
-    _attractions.clear();
-    _tours.clear();
-    _technicalVisits.clear();
     _itineraries.clear();
     _anugaItems.clear();
     _destinations.clear();
@@ -353,101 +359,6 @@ class MissionProvider extends ChangeNotifier {
     }
   }
 
-  // Load hotels for a mission
-  Future<List<HotelModel>> _loadHotels(String missionId) async {
-    try {
-      debugPrint('Loading hotels for mission: $missionId');
-      
-      final response = await SupabaseService.client
-          .from('hotels')
-          .select()
-          .eq('mission_id', missionId)
-          .order('priority', ascending: false)
-          .order('category', ascending: true);
-      
-      debugPrint('Hotels response: $response');
-      
-      return (response as List)
-          .map((json) => HotelModel.fromJson(json))
-          .toList();
-    } catch (e) {
-      debugPrint('Error loading hotels: $e');
-      return [];
-    }
-  }
-
-  // Load attractions for a mission
-  Future<List<AttractionModel>> _loadAttractions(String missionId) async {
-    try {
-      debugPrint('Loading attractions for mission: $missionId');
-      
-      final response = await SupabaseService.client
-          .from('attractions')
-          .select()
-          .eq('mission_id', missionId)
-          .eq('is_active', true)
-          .order('display_order', ascending: true)
-          .order('title', ascending: true);
-      
-      debugPrint('Attractions response: $response');
-      
-      return (response as List)
-          .map((json) => AttractionModel.fromJson(json))
-          .toList();
-    } catch (e) {
-      debugPrint('Error loading attractions: $e');
-      return [];
-    }
-  }
-
-  // Load tours for a mission
-  Future<List<TourModel>> _loadTours(String missionId) async {
-    try {
-      debugPrint('Loading tours for mission: $missionId');
-      
-      final response = await SupabaseService.client
-          .from('tours')
-          .select()
-          .eq('mission_id', missionId)
-          .eq('is_active', true)
-          .order('display_order', ascending: true)
-          .order('title', ascending: true);
-      
-      debugPrint('Tours response: $response');
-      
-      return (response as List)
-          .map((json) => TourModel.fromJson(json))
-          .toList();
-    } catch (e) {
-      debugPrint('Error loading tours: $e');
-      return [];
-    }
-  }
-
-  // Load technical visits for a mission
-  Future<List<TechnicalVisitModel>> _loadTechnicalVisits(String missionId) async {
-    try {
-      debugPrint('Loading technical visits for mission: $missionId');
-      
-      final response = await SupabaseService.client
-          .from('technical_visits')
-          .select()
-          .eq('mission_id', missionId)
-          .eq('is_active', true)
-          .order('display_order', ascending: true)
-          .order('title', ascending: true);
-      
-      debugPrint('Technical visits response: $response');
-      
-      return (response as List)
-          .map((json) => TechnicalVisitModel.fromJson(json))
-          .toList();
-    } catch (e) {
-      debugPrint('Error loading technical visits: $e');
-      return [];
-    }
-  }
-
   // Load ANUGA items for a mission
   Future<void> loadAnugaItems(String missionId) async {
     try {
@@ -471,6 +382,84 @@ class MissionProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error loading ANUGA items: $e');
       _setError('Erro ao carregar informações da ANUGA: $e');
+    }
+  }
+
+  // Load technical visits for a mission
+  Future<void> loadTechnicalVisits(String missionId) async {
+    try {
+      debugPrint('Loading technical visits for mission: $missionId');
+      
+      final response = await SupabaseService.client
+          .from('technical_visits')
+          .select()
+          .eq('mission_id', missionId)
+          .eq('is_active', true)
+          .order('display_order', ascending: true);
+      
+      debugPrint('Technical visits response: $response');
+      
+      _technicalVisits = (response as List)
+          .map((json) => TechnicalVisitModel.fromJson(json))
+          .toList();
+      
+      debugPrint('Technical visits loaded: ${_technicalVisits.length}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading technical visits: $e');
+      _setError('Erro ao carregar visitas técnicas: $e');
+    }
+  }
+
+  // Load tours for a mission
+  Future<void> loadTours(String missionId) async {
+    try {
+      debugPrint('Loading tours for mission: $missionId');
+      
+      final response = await SupabaseService.client
+          .from('tours')
+          .select()
+          .eq('mission_id', missionId)
+          .eq('is_active', true)
+          .order('display_order', ascending: true);
+      
+      debugPrint('Tours response: $response');
+      
+      _tours = (response as List)
+          .map((json) => TourModel.fromJson(json))
+          .toList();
+      
+      debugPrint('Tours loaded: ${_tours.length}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading tours: $e');
+      _setError('Erro ao carregar tours: $e');
+    }
+  }
+
+  // Load attractions for a mission
+  Future<void> loadAttractions(String missionId) async {
+    try {
+      debugPrint('Loading attractions for mission: $missionId');
+      
+      final response = await SupabaseService.client
+          .from('attractions')
+          .select()
+          .eq('mission_id', missionId)
+          .eq('is_active', true)
+          .order('display_order', ascending: true);
+      
+      debugPrint('Attractions response: $response');
+      
+      _attractions = (response as List)
+          .map((json) => AttractionModel.fromJson(json))
+          .toList();
+      
+      debugPrint('Attractions loaded: ${_attractions.length}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading attractions: $e');
+      _setError('Erro ao carregar atrações: $e');
     }
   }
 
@@ -498,6 +487,30 @@ class MissionProvider extends ChangeNotifier {
     _clearError();
   }
   
+  // Load hotels from dedicated table
+  Future<void> loadHotels(String missionId) async {
+    try {
+      debugPrint('Loading hotels for mission: $missionId');
+      final response = await SupabaseService.client
+          .from('hotels')
+          .select('*')
+          .eq('mission_id', missionId)
+          .order('display_order');
+      
+      debugPrint('Hotels response: $response');
+      
+      _hotels = (response as List)
+          .map((json) => HotelModel.fromJson(json))
+          .toList();
+      
+      debugPrint('Hotels loaded: ${_hotels.length}');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading hotels: $e');
+      _setError('Erro ao carregar hotéis: $e');
+    }
+  }
+
   @override
   void dispose() {
     _missionSubscription?.cancel();

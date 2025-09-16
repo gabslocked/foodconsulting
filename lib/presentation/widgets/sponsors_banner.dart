@@ -19,113 +19,68 @@ class SponsorsBanner extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      margin: const EdgeInsets.all(AppDimensions.paddingMedium),
-      padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    // Sort sponsors by display_order
+    final sortedSponsors = List<SponsorModel>.from(sponsors)
+      ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Apoiadores',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: AppDimensions.spacingMedium),
-          Wrap(
-            spacing: AppDimensions.spacingMedium,
-            runSpacing: AppDimensions.spacingMedium,
-            children: sponsors.map((sponsor) => _buildSponsorItem(sponsor)).toList(),
-          ),
+          const SizedBox(height: AppDimensions.spacing8),
+          ...sortedSponsors.map((sponsor) => _buildSponsorImage(sponsor)).toList(),
         ],
       ),
     );
   }
 
-  Widget _buildSponsorItem(SponsorModel sponsor) {
+  Widget _buildSponsorImage(SponsorModel sponsor) {
     return GestureDetector(
       onTap: sponsor.websiteUrl != null ? () => _launchUrl(sponsor.websiteUrl!) : null,
       child: Container(
-        padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+        width: double.infinity,
+        height: 50,
+        margin: const EdgeInsets.only(bottom: AppDimensions.spacing8),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-          border: Border.all(
-            color: AppColors.primary.withOpacity(0.2),
-            width: 1,
-          ),
+          border: Border.all(color: AppColors.gray200.withOpacity(0.5)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-              child: Image.network(
-                sponsor.logoUrl,
-                height: 60,
-                width: 120,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 60,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                    ),
-                    child: const Icon(
-                      Icons.business,
-                      color: AppColors.textSecondary,
-                      size: 24,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: AppDimensions.spacingSmall),
-            Text(
-              sponsor.name,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            if (sponsor.sponsorType == 'main') ...[
-              const SizedBox(height: 2),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'PRINCIPAL',
-                  style: TextStyle(
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+            child: Image.network(
+              sponsor.logoUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
                   ),
-                ),
-              ),
-            ],
-          ],
+                  child: const Icon(
+                    Icons.business,
+                    color: AppColors.textSecondary,
+                    size: 20,
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );

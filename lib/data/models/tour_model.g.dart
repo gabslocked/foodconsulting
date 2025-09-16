@@ -23,10 +23,8 @@ TourModel _$TourModelFromJson(Map<String, dynamic> json) => TourModel(
       isActive: json['is_active'] as bool,
       metadata: json['metadata'] as Map<String, dynamic>?,
       recommendedBy: json['recommended_by'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+      createdAt: TourModel._dateTimeFromJson(json['created_at']),
+      updatedAt: TourModel._dateTimeFromJsonNullable(json['updated_at']),
     );
 
 Map<String, dynamic> _$TourModelToJson(TourModel instance) => <String, dynamic>{
