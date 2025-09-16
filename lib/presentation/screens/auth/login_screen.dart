@@ -57,13 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                       
                       // Logo
                       Center(
                         child: SizedBox(
-                          width: 210,
-                          height: 210,
+                          width: 320,
+                          height: 320,
                           child: Image.asset(
                             'assets/images/logo-food.png',
                             fit: BoxFit.contain,
@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
                       
                       // Login form
                       Form(

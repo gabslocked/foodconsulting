@@ -342,22 +342,45 @@ class _HomeScreenState extends State<HomeScreen> {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                      : null,
+                                  color: AppColors.primary,
+                                ),
+                              );
+                            },
                             errorBuilder: (context, error, stackTrace) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  'assets/images/logo-food.png',
-                                  fit: BoxFit.contain,
+                              return CircleAvatar(
+                                backgroundColor: AppColors.primary,
+                                child: Text(
+                                  (user?.fullName?.isNotEmpty == true)
+                                      ? user!.fullName![0].toUpperCase()
+                                      : 'U',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               );
                             },
                           ),
                         )
-                      : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'assets/images/logo-food.png',
-                            fit: BoxFit.contain,
+                      : CircleAvatar(
+                          backgroundColor: AppColors.primary,
+                          child: Text(
+                            (user?.fullName?.isNotEmpty == true)
+                                ? user!.fullName![0].toUpperCase()
+                                : 'U',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                 ),

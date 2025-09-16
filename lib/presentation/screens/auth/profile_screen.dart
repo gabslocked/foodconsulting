@@ -177,17 +177,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           
           // Upload to Supabase Storage
           try {
-            await authProvider.supabaseClient.storage
-                .from('avatars')
-                .upload(fileName, _selectedImage!, fileOptions: FileOptions(upsert: true));
+            // Try to upload to avatars bucket first
+            try {
+              await authProvider.supabaseClient.storage
+                  .from('avatars')
+                  .upload(fileName, _selectedImage!, fileOptions: FileOptions(upsert: true));
 
-            // Get public URL
-            avatarUrl = authProvider.supabaseClient.storage
-                .from('avatars')
-                .getPublicUrl(fileName);
+              // Get public URL
+              avatarUrl = authProvider.supabaseClient.storage
+                  .from('avatars')
+                  .getPublicUrl(fileName);
+            } catch (avatarError) {
+              // If avatars bucket fails, try uploads bucket as fallback
+              print('Avatars bucket failed, trying uploads bucket: $avatarError');
+              await authProvider.supabaseClient.storage
+                  .from('uploads')
+                  .upload(fileName, _selectedImage!, fileOptions: FileOptions(upsert: true));
+
+              // Get public URL from uploads bucket
+              avatarUrl = authProvider.supabaseClient.storage
+                  .from('uploads')
+                  .getPublicUrl(fileName);
+            }
           } catch (uploadError) {
             print('Upload error: $uploadError');
-            throw Exception('Erro ao fazer upload da imagem: $uploadError');
+            throw Exception('Erro ao fazer upload da imagem. Verifique as permissões do bucket no Supabase.');
           }
         }
       }
