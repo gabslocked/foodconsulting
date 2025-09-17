@@ -76,8 +76,8 @@ workflows:
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
-            --build-name=1.0.24 \
-            --build-number=24 \
+            --build-name=1.0.$BUILD_NUMBER \
+            --build-number=$BUILD_NUMBER \
             --export-options-plist=export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
@@ -94,8 +94,82 @@ workflows:
         auth: integration
         submit_to_testflight: true
         beta_groups:
-          - App Store Connect Users
+          - foodexternal
         submit_to_app_store: true
+          
+  ios-adhoc-workflow:
+    name: iOS AdHoc (Install on Air/Diawi)
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    integrations:
+      app_store_connect: Food Consulting
+    environment:
+      ios_signing:
+        distribution_type: ad_hoc
+        bundle_identifier: br.com.foodconsulting.app
+      vars:
+        BUNDLE_ID: "br.com.foodconsulting.app"
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        TEAM_ID: "B4D2353K7V"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Set Team ID in project.pbxproj
+        script: |
+          # Set DEVELOPMENT_TEAM in project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "B4D2353K7V";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = ;/DEVELOPMENT_TEAM = "B4D2353K7V";/g' ios/Runner.xcodeproj/project.pbxproj
+          # Add DEVELOPMENT_TEAM if it doesn't exist
+          sed -i '' '/CODE_SIGN_STYLE = Automatic;/a\
+          				DEVELOPMENT_TEAM = "B4D2353K7V";' ios/Runner.xcodeproj/project.pbxproj
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Install CocoaPods dependencies
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Create Ad Hoc export options
+        script: |
+          cat > export_options.plist <<EOL
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>teamID</key>
+            <string>B4D2353K7V</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <false/>
+          </dict>
+          </plist>
+          EOL
+      - name: Flutter build ipa (Ad Hoc)
+        script: |
+          flutter build ipa --release \
+            --build-name=1.0.$BUILD_NUMBER \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - gabrielcustodiooliveira@gmail.com
+        notify:
+          success: true
+          failure: true
         
   android-workflow:
     name: Android Workflow
@@ -115,8 +189,8 @@ workflows:
       - name: Flutter build appbundle
         script: |
           flutter build appbundle --release \
-            --build-name=1.0.24 \
-            --build-number=24
+            --build-name=1.0.$BUILD_NUMBER \
+            --build-number=$BUILD_NUMBER
     artifacts:
       - build/app/outputs/**/*.aab
       - build/app/outputs/**/mapping.txt
@@ -128,7 +202,7 @@ workflows:
         notify:
           success: true
           failure: true
-      google_play:
-        credentials: Encrypted(...)
-        track: internal
-        submit_as_draft: true
+      # google_play:
+      #   credentials: Encrypted(...)
+      #   track: internal
+      #   submit_as_draft: true
