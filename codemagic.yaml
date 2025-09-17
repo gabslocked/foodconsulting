@@ -13,6 +13,7 @@ workflows:
         BUNDLE_ID: "br.com.foodconsulting.app"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        TEAM_ID: "B4D2353K7V"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -30,7 +31,7 @@ workflows:
             <key>method</key>
             <string>app-store</string>
             <key>teamID</key>
-            <string>$APP_STORE_CONNECT_TEAM_ID</string>
+            <string>$TEAM_ID</string>
             <key>signingStyle</key>
             <string>automatic</string>
             <key>stripSwiftSymbols</key>
