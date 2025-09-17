@@ -40,17 +40,12 @@ workflows:
         script: |
           echo "Available provisioning profiles:"
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
-          echo "Searching for profiles with bundle ID:"
-          grep -r "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles found for bundle ID"
-          echo "Getting profile UUID for Food Consulting:"
           
-          # Get the full filename and extract the UUID properly
-          PROFILE_FILE=$(grep -l "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision | head -1)
-          PROFILE_UUID=$(basename "$PROFILE_FILE" .mobileprovision | sed 's/provisioning_profile_//')
-          echo "Profile file: $PROFILE_FILE"
-          echo "Profile UUID: $PROFILE_UUID"
+          # Use the UUID that was detected by xcode-project use-profiles
+          PROFILE_UUID="d0095178-0b6c-4b41-98dc-7dcd82953bcc"
+          echo "Using UUID from xcode-project: $PROFILE_UUID"
           
-          # Create export options with the actual UUID
+          # Create export options with the real UUID
           cat > export_options.plist <<EOL
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -77,9 +72,7 @@ workflows:
           </plist>
           EOL
           
-          echo "Created export_options.plist with UUID: $PROFILE_UUID"
-          echo "Content of export_options.plist:"
-          cat export_options.plist
+          echo "Created export_options.plist with real UUID: $PROFILE_UUID"
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
