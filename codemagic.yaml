@@ -36,7 +36,7 @@ workflows:
       - name: Install CocoaPods dependencies
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Check provisioning profiles
+      - name: Check provisioning profiles and create export options
         script: |
           echo "Available provisioning profiles:"
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
@@ -45,9 +45,8 @@ workflows:
           echo "Getting profile UUID for Food Consulting:"
           PROFILE_UUID=$(grep -l "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision | head -1 | xargs basename | sed 's/.mobileprovision//')
           echo "Profile UUID: $PROFILE_UUID"
-          echo "PROFILE_UUID=$PROFILE_UUID" >> $CM_ENV
-      - name: Create export options plist
-        script: |
+          
+          # Create export options with the actual UUID
           cat > export_options.plist <<EOL
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -60,7 +59,7 @@ workflows:
             <key>provisioningProfiles</key>
             <dict>
               <key>br.com.foodconsulting.app</key>
-              <string>\$PROFILE_UUID</string>
+              <string>$PROFILE_UUID</string>
             </dict>
             <key>signingStyle</key>
             <string>manual</string>
@@ -73,6 +72,8 @@ workflows:
           </dict>
           </plist>
           EOL
+          
+          echo "Created export_options.plist with UUID: $PROFILE_UUID"
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
