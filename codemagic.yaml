@@ -6,14 +6,17 @@ workflows:
     integrations:
       app_store_connect: Food Consulting
     environment:
+    environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: br.com.foodconsulting.app
+        
       vars:
         BUNDLE_ID: "br.com.foodconsulting.app"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         TEAM_ID: "B4D2353K7V"
+        APP_STORE_CONNECT_TEAM_ID: "B4D2353K7V"
       flutter: stable
       xcode: latest
       cocoapods: default
