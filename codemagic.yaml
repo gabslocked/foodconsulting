@@ -22,9 +22,14 @@ workflows:
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
-      - name: Set Team ID in Xcode project
+      - name: Set Team ID in project.pbxproj
         script: |
-          xcode-project use-profiles --team-id B4D2353K7V
+          # Set DEVELOPMENT_TEAM in project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = "B4D2353K7V";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = ;/DEVELOPMENT_TEAM = "B4D2353K7V";/g' ios/Runner.xcodeproj/project.pbxproj
+          # Add DEVELOPMENT_TEAM if it doesn't exist
+          sed -i '' '/CODE_SIGN_STYLE = Automatic;/a\
+          				DEVELOPMENT_TEAM = "B4D2353K7V";' ios/Runner.xcodeproj/project.pbxproj
       - name: Get Flutter packages
         script: |
           flutter pub get
