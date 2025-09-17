@@ -76,8 +76,8 @@ workflows:
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
-            --build-name=1.0.$BUILD_NUMBER \
-            --build-number=$BUILD_NUMBER \
+            --build-name=1.0.24 \
+            --build-number=24 \
             --export-options-plist=export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
@@ -115,8 +115,8 @@ workflows:
       - name: Flutter build appbundle
         script: |
           flutter build appbundle --release \
-            --build-name=1.0.$BUILD_NUMBER \
-            --build-number=$BUILD_NUMBER
+            --build-name=1.0.24 \
+            --build-number=24
     artifacts:
       - build/app/outputs/**/*.aab
       - build/app/outputs/**/mapping.txt
