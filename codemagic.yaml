@@ -73,6 +73,10 @@ workflows:
           EOL
           
           echo "Created export_options.plist with real UUID: $PROFILE_UUID"
+      - name: Check App Store Connect access
+        script: |
+          echo "Testing App Store Connect API access..."
+          app-store-connect apps list || echo "Failed to list apps"
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
@@ -95,7 +99,7 @@ workflows:
         submit_to_testflight: true
         beta_groups:
           - App Store Connect Users
-        submit_to_app_store: true
+        submit_to_app_store: false
         
   android-workflow:
     name: Android Workflow
