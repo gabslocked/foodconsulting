@@ -362,7 +362,7 @@ class MissionProvider extends ChangeNotifier {
   // Load ANUGA items for a mission
   Future<void> loadAnugaItems(String missionId) async {
     try {
-      debugPrint('Loading ANUGA items for mission: $missionId');
+      debugPrint('🔍 Loading ANUGA items for mission: $missionId');
       
       final response = await SupabaseService.client
           .from('anuga')
@@ -371,16 +371,22 @@ class MissionProvider extends ChangeNotifier {
           .eq('is_active', true)
           .order('display_order', ascending: true);
       
-      debugPrint('ANUGA response: $response');
+      debugPrint('📊 ANUGA response: $response');
+      debugPrint('📊 ANUGA response type: ${response.runtimeType}');
+      debugPrint('📊 ANUGA response length: ${(response as List).length}');
       
       _anugaItems = (response as List)
           .map((json) => AnugaModel.fromJson(json))
           .toList();
       
-      debugPrint('ANUGA items loaded: ${_anugaItems.length}');
+      debugPrint('✅ ANUGA items loaded: ${_anugaItems.length}');
+      for (int i = 0; i < _anugaItems.length; i++) {
+        debugPrint('   - Item $i: ${_anugaItems[i].title}');
+      }
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading ANUGA items: $e');
+      debugPrint('❌ Error loading ANUGA items: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
       _setError('Erro ao carregar informações da ANUGA: $e');
     }
   }

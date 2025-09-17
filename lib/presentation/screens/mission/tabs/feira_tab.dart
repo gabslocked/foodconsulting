@@ -15,11 +15,17 @@ class FeiraTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MissionProvider>(
       builder: (context, provider, child) {
+        debugPrint('🎪 FeiraTab build - isLoadingDetails: ${provider.isLoadingDetails}');
+        debugPrint('🎪 FeiraTab build - error: ${provider.error}');
+        debugPrint('🎪 FeiraTab build - anugaItems count: ${provider.anugaItems.length}');
+        
         if (provider.isLoadingDetails) {
+          debugPrint('🎪 FeiraTab showing loading widget');
           return const LoadingWidget();
         }
 
         if (provider.error != null) {
+          debugPrint('🎪 FeiraTab showing error: ${provider.error}');
           return ErrorDisplayWidget(
             message: provider.error!,
             onRetry: () => provider.loadUserMissions(),
@@ -27,8 +33,10 @@ class FeiraTab extends StatelessWidget {
         }
 
         final anugaItems = provider.anugaItems;
+        debugPrint('🎪 FeiraTab anugaItems: ${anugaItems.map((item) => item.title).toList()}');
         
         if (anugaItems.isEmpty) {
+          debugPrint('🎪 FeiraTab showing empty state');
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository.dart';
@@ -11,14 +12,17 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _user;
   bool _isLoading = false;
   String? _error;
+  bool _keepLoggedIn = false;
   
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _user != null;
   String? get error => _error;
+  bool get keepLoggedIn => _keepLoggedIn;
   
   AuthProvider({required this.navigatorKey}) {
     _initializeAuth();
+    _loadKeepLoggedInPreference();
   }
   
   void _initializeAuth() {
@@ -51,13 +55,15 @@ class AuthProvider extends ChangeNotifier {
     }
   }
   
-  Future<bool> signIn(String email, String password) async {
+  Future<bool> signIn(String email, String password, {bool keepLoggedIn = false}) async {
     _setLoading(true);
     _clearError();
     
     try {
       final response = await _authRepository.signIn(email, password);
       if (response.user != null) {
+        _keepLoggedIn = keepLoggedIn;
+        await _saveKeepLoggedInPreference(keepLoggedIn);
         await _loadUserProfile();
         _setLoading(false);
         return true;
@@ -187,5 +193,29 @@ class AuthProvider extends ChangeNotifier {
   
   void clearError() {
     _clearError();
+  }
+
+  void setKeepLoggedIn(bool value) {
+    _keepLoggedIn = value;
+    notifyListeners();
+  }
+
+  Future<void> _loadKeepLoggedInPreference() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _keepLoggedIn = prefs.getBool('keep_logged_in') ?? false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading keep logged in preference: $e');
+    }
+  }
+
+  Future<void> _saveKeepLoggedInPreference(bool value) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('keep_logged_in', value);
+    } catch (e) {
+      debugPrint('Error saving keep logged in preference: $e');
+    }
   }
 }
