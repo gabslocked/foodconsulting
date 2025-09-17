@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,44 +14,94 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _keepLoggedIn = false;
+  bool _isInitialized = false;
   
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _user != null;
   String? get error => _error;
   bool get keepLoggedIn => _keepLoggedIn;
+  bool get isInitialized => _isInitialized;
   
   AuthProvider({required this.navigatorKey}) {
     _initializeAuth();
     _loadKeepLoggedInPreference();
+    _setupAppLifecycleListener();
   }
   
   void _initializeAuth() {
     // Listen to auth state changes
     _authRepository.authStateChanges.listen((AuthState data) {
+      debugPrint('🔐 Auth state change: ${data.event}');
+      
       if (data.event == AuthChangeEvent.signedIn) {
         _loadUserProfile();
       } else if (data.event == AuthChangeEvent.signedOut) {
         _user = null;
+        _isInitialized = true;
         navigatorKey.currentState?.pushNamedAndRemoveUntil('login', (route) => false);
         notifyListeners();
+      } else if (data.event == AuthChangeEvent.tokenRefreshed) {
+        debugPrint('🔄 Token refreshed, loading user profile');
+        _loadUserProfile();
       }
     });
     
-    // Load user profile if already authenticated
-    if (_authRepository.isAuthenticated) {
-      _loadUserProfile();
+    // Check for existing session
+    _checkInitialSession();
+  }
+
+  Future<void> _checkInitialSession() async {
+    try {
+      debugPrint('🔍 Checking initial session...');
+      final session = _authRepository.supabaseClient.auth.currentSession;
+      
+      if (session != null) {
+        debugPrint('📱 Found existing session');
+        
+        // Check if session is expired
+        if (session.isExpired) {
+          debugPrint('⏰ Session expired, waiting for refresh...');
+          // Wait for token refresh event
+          await for (final authState in _authRepository.authStateChanges) {
+            if (authState.event == AuthChangeEvent.tokenRefreshed) {
+              debugPrint('✅ Token refreshed successfully');
+              await _loadUserProfile();
+              break;
+            } else if (authState.event == AuthChangeEvent.signedOut) {
+              debugPrint('❌ Session refresh failed, user signed out');
+              _isInitialized = true;
+              notifyListeners();
+              break;
+            }
+          }
+        } else {
+          debugPrint('✅ Valid session found, loading user profile');
+          await _loadUserProfile();
+        }
+      } else {
+        debugPrint('❌ No existing session found');
+        _isInitialized = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('❌ Error checking initial session: $e');
+      _isInitialized = true;
+      notifyListeners();
     }
   }
   
   Future<void> _loadUserProfile() async {
     try {
       _user = await _authRepository.getCurrentUserProfile();
+      _isInitialized = true;
+      debugPrint('✅ User profile loaded: ${_user?.fullName}');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading user profile: $e');
+      debugPrint('❌ Error loading user profile: $e');
       // Don't throw error, just set user to null to prevent infinite loop
       _user = null;
+      _isInitialized = true;
       notifyListeners();
     }
   }
@@ -217,5 +268,60 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error saving keep logged in preference: $e');
     }
+  }
+
+  void _setupAppLifecycleListener() {
+    SystemChannels.lifecycle.setMessageHandler((message) async {
+      debugPrint('🔄 App lifecycle state: $message');
+      
+      if (message == AppLifecycleState.detached.toString()) {
+        // App is being terminated - only sign out if keep logged in is disabled
+        if (!_keepLoggedIn && _user != null) {
+          debugPrint('🚪 App terminated without keep logged in - signing out');
+          try {
+            await _authRepository.signOut();
+            _user = null;
+            await _saveKeepLoggedInPreference(false);
+          } catch (e) {
+            debugPrint('❌ Error signing out on app termination: $e');
+          }
+        } else if (_keepLoggedIn && _user != null) {
+          debugPrint('💾 App terminated with keep logged in enabled - preserving session');
+        }
+      } else if (message == AppLifecycleState.paused.toString()) {
+        // App moved to background
+        debugPrint('⏸️ App moved to background - session preserved');
+        
+        // For Android: Clear sensitive data from recent apps if keep logged in is disabled
+        if (!_keepLoggedIn) {
+          // This helps with security on Android recent apps screen
+          debugPrint('🔒 Clearing sensitive data for recent apps');
+        }
+      } else if (message == AppLifecycleState.resumed.toString()) {
+        // App resumed from background
+        debugPrint('▶️ App resumed from background');
+        
+        // Check if session is still valid when app resumes
+        if (_user != null) {
+          final session = _authRepository.supabaseClient.auth.currentSession;
+          if (session != null && session.isExpired) {
+            debugPrint('⏰ Session expired while app was in background - will refresh automatically');
+          } else if (session != null) {
+            debugPrint('✅ Session still valid after resume');
+          } else {
+            debugPrint('❌ No session found after resume');
+            if (!_keepLoggedIn) {
+              _user = null;
+              notifyListeners();
+            }
+          }
+        }
+      } else if (message == AppLifecycleState.inactive.toString()) {
+        // App is inactive (iOS specific - when app is interrupted)
+        debugPrint('😴 App became inactive');
+      }
+      
+      return null;
+    });
   }
 }

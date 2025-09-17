@@ -20,9 +20,10 @@ class AppRouter {
       final authProvider = context.read<AuthProvider>();
       final isAuthenticated = authProvider.isAuthenticated;
       final isLoading = authProvider.isLoading;
+      final isInitialized = authProvider.isInitialized;
       
-      // Show splash while loading
-      if (isLoading) {
+      // Show splash while loading or not initialized
+      if (isLoading || !isInitialized) {
         return '/';
       }
       

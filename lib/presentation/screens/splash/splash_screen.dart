@@ -46,9 +46,10 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
     
     // Check authentication status after animation
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
-        // final authProvider = context.read<AuthProvider>();
+        final authProvider = context.read<AuthProvider>();
+        debugPrint('🚀 Splash screen checking auth state - initialized: ${authProvider.isInitialized}, authenticated: ${authProvider.isAuthenticated}');
         // The router will handle navigation based on auth state
       }
     });
