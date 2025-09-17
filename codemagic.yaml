@@ -4,12 +4,11 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 120
     integrations:
-      app_store_connect: codemagic_integration
+      app_store_connect: Food Consulting
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: br.com.foodconsulting.app
-        automatic: true
       vars:
         BUNDLE_ID: "br.com.foodconsulting.app"
         XCODE_WORKSPACE: "Runner.xcworkspace"
