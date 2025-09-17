@@ -8,14 +8,12 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.foodconsulting.app
+        bundle_identifier: br.com.foodconsulting.app
       vars:
-        BUNDLE_ID: "com.foodconsulting.app"
+        BUNDLE_ID: "br.com.foodconsulting.app"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        APP_STORE_CONNECT_ISSUER_ID: Encrypted(...) # Add your App Store Connect API key
-        APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(...) # Add your key ID
-        APP_STORE_CONNECT_PRIVATE_KEY: Encrypted(...) # Add your .p8 key
+        # App Store Connect API keys configured in Codemagic UI
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -61,7 +59,7 @@ workflows:
       android_signing:
         - keystore_reference
       vars:
-        PACKAGE_NAME: "com.foodconsulting.app"
+        PACKAGE_NAME: "br.com.foodconsulting.app"
       flutter: stable
       java: 11
     scripts:
