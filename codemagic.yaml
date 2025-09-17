@@ -43,7 +43,11 @@ workflows:
           echo "Searching for profiles with bundle ID:"
           grep -r "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles found for bundle ID"
           echo "Getting profile UUID for Food Consulting:"
-          PROFILE_UUID=$(grep -l "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision | head -1 | xargs basename | sed 's/.mobileprovision//')
+          
+          # Get the full filename and extract the UUID properly
+          PROFILE_FILE=$(grep -l "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision | head -1)
+          PROFILE_UUID=$(basename "$PROFILE_FILE" .mobileprovision | sed 's/provisioning_profile_//')
+          echo "Profile file: $PROFILE_FILE"
           echo "Profile UUID: $PROFILE_UUID"
           
           # Create export options with the actual UUID
@@ -74,6 +78,8 @@ workflows:
           EOL
           
           echo "Created export_options.plist with UUID: $PROFILE_UUID"
+          echo "Content of export_options.plist:"
+          cat export_options.plist
       - name: Flutter build ipa
         script: |
           flutter build ipa --release \
