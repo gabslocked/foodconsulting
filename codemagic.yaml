@@ -36,6 +36,12 @@ workflows:
       - name: Install CocoaPods dependencies
         script: |
           find . -name "Podfile" -execdir pod install \;
+      - name: Check provisioning profiles
+        script: |
+          echo "Available provisioning profiles:"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+          echo "Searching for profiles with bundle ID:"
+          grep -r "br.com.foodconsulting.app" ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "No profiles found for bundle ID"
       - name: Create export options plist
         script: |
           cat > export_options.plist <<EOL
@@ -47,8 +53,13 @@ workflows:
             <string>app-store</string>
             <key>teamID</key>
             <string>B4D2353K7V</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>br.com.foodconsulting.app</key>
+              <string>Food Consulting</string>
+            </dict>
             <key>signingStyle</key>
-            <string>automatic</string>
+            <string>manual</string>
             <key>stripSwiftSymbols</key>
             <true/>
             <key>uploadBitcode</key>
