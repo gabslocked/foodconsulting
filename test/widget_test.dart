@@ -13,22 +13,26 @@ import 'package:food_consulting_app/app.dart';
 import 'package:food_consulting_app/presentation/providers/auth_provider.dart';
 import 'package:food_consulting_app/presentation/providers/mission_provider.dart';
 import 'package:food_consulting_app/presentation/providers/user_provider.dart';
+import 'package:food_consulting_app/presentation/providers/notification_provider.dart';
 
 void main() {
   testWidgets('App starts correctly', (WidgetTester tester) async {
+    final navigatorKey = GlobalKey<NavigatorState>();
+    
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => AuthProvider(navigatorKey: navigatorKey)),
           ChangeNotifierProvider(create: (_) => MissionProvider()),
           ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ],
         child: const FoodConsultingApp(),
       ),
     );
 
-    // Verify that splash screen appears
-    expect(find.text('Food Consulting'), findsOneWidget);
+    // Verify that login screen appears (since we removed splash screen)
+    expect(find.text('Entrar'), findsOneWidget);
   });
 }

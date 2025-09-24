@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../presentation/providers/auth_provider.dart';
-import '../presentation/screens/splash/splash_screen.dart';
 import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/profile_screen.dart';
 import '../presentation/screens/auth/change_password_screen.dart';
@@ -15,47 +14,33 @@ class AppRouter {
   static GoRouter router(GlobalKey<NavigatorState> navigatorKey) {
     return GoRouter(
       navigatorKey: navigatorKey,
-    initialLocation: '/',
-    redirect: (BuildContext context, GoRouterState state) {
-      final authProvider = context.read<AuthProvider>();
-      final isAuthenticated = authProvider.isAuthenticated;
-      final isLoading = authProvider.isLoading;
-      final isInitialized = authProvider.isInitialized;
-      
-      // Show splash while loading or not initialized
-      if (isLoading || !isInitialized) {
-        return '/';
-      }
-      
-      // Redirect to login if not authenticated
-      if (!isAuthenticated && state.uri.toString() != '/login') {
-        return '/login';
-      }
-      
-      // Redirect to home if authenticated and on login/splash
-      if (isAuthenticated) {
-        final user = authProvider.user;
+      initialLocation: '/login',
+      redirect: (BuildContext context, GoRouterState state) {
+        final authProvider = context.read<AuthProvider>();
+        final isAuthenticated = authProvider.isAuthenticated;
         
-        // Check if it's first login and redirect to change password
-        if (user?.isFirstLogin == true && !state.uri.toString().contains('/change-password')) {
-          return '/change-password?first=true';
+        // Redirect to login if not authenticated
+        if (!isAuthenticated && state.uri.toString() != '/login') {
+          return '/login';
         }
         
-        if (state.uri.toString() == '/login' || state.uri.toString() == '/') {
-          return '/home';
+        // Redirect to home if authenticated and on login
+        if (isAuthenticated) {
+          final user = authProvider.user;
+          
+          // Check if it's first login and redirect to change password
+          if (user?.isFirstLogin == true && !state.uri.toString().contains('/change-password')) {
+            return '/change-password?first=true';
+          }
+          
+          if (state.uri.toString() == '/login') {
+            return '/home';
+          }
         }
-      }
-      
-      return null;
-    },
+        
+        return null;
+      },
     routes: [
-      // Splash Screen
-      GoRoute(
-        path: '/',
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-      
       // Authentication Routes
       GoRoute(
         path: '/login',
@@ -108,7 +93,6 @@ class AppRouter {
         name: 'mission-detail',
         builder: (context, state) {
           final missionId = state.pathParameters['id']!;
-          final initialTab = state.uri.queryParameters['tab'];
           return MissionDetailScreen(
             missionId: missionId,
           );

@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _keepLoggedIn = false;
 
   @override
   void dispose() {
@@ -37,7 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final success = await authProvider.signIn(
       _emailController.text.trim(),
       _passwordController.text,
-      keepLoggedIn: _keepLoggedIn,
     );
 
     if (success && mounted) {
@@ -124,40 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: AppDimensions.spacing16),
-                            
-                            // Keep logged in checkbox
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _keepLoggedIn,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _keepLoggedIn = value ?? false;
-                                    });
-                                  },
-                                  activeColor: AppColors.primary,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _keepLoggedIn = !_keepLoggedIn;
-                                      });
-                                    },
-                                    child: Text(
-                                      'Manter conectado',
-                                      style: TextStyle(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: AppDimensions.spacing16),
+                            const SizedBox(height: AppDimensions.spacing24),
                             
                             // Login button
                             ElevatedButton(
